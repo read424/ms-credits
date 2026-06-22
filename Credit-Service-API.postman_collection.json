@@ -1,0 +1,337 @@
+{
+  "info": {
+    "name": "Credit Service API",
+    "description": "API REST para la gestión de productos de crédito bancario: préstamos personales, préstamos empresariales y tarjetas de crédito.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "1"
+  },
+  "item": [
+    {
+      "name": "Credits",
+      "item": [
+        {
+          "name": "Create Credit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"665f1a2b3c4d5e6f7a8b9c0d\",\n  \"type\": \"PERSONAL_LOAN\",\n  \"amount\": 15000.00,\n  \"interestRate\": 0.18,\n  \"creditLimit\": null\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/credits",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "credits"
+              ]
+            },
+            "description": "Crea un nuevo producto de crédito. Valida las reglas RN-01 a RN-05."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Credit - Business Loan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"665f1a2b3c4d5e6f7a8b9c0e\",\n  \"type\": \"BUSINESS_LOAN\",\n  \"amount\": 50000.00,\n  \"interestRate\": 0.15,\n  \"creditLimit\": null\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/credits",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "credits"
+              ]
+            },
+            "description": "Crea un préstamo empresarial"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Credit - Credit Card",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"665f1a2b3c4d5e6f7a8b9c0f\",\n  \"type\": \"CREDIT_CARD\",\n  \"amount\": null,\n  \"interestRate\": 0.20,\n  \"creditLimit\": 5000.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/credits",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "credits"
+              ]
+            },
+            "description": "Crea una tarjeta de crédito"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Credits",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/credits",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "credits"
+              ]
+            },
+            "description": "Lista todos los créditos"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Credit by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/credits/{{credit_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "credits",
+                "{{credit_id}}"
+              ]
+            },
+            "description": "Obtiene un crédito por su ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Credit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"665f1a2b3c4d5e6f7a8b9c0d\",\n  \"type\": \"PERSONAL_LOAN\",\n  \"amount\": 18000.00,\n  \"interestRate\": 0.17,\n  \"creditLimit\": null\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/credits/{{credit_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "credits",
+                "{{credit_id}}"
+              ]
+            },
+            "description": "Actualiza un crédito existente"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Credit",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/credits/{{credit_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "credits",
+                "{{credit_id}}"
+              ]
+            },
+            "description": "Elimina (soft delete) un crédito"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Credits by Customer",
+      "item": [
+        {
+          "name": "Get Credits by Customer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/credits/customer/{{customer_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "credits",
+                "customer",
+                "{{customer_id}}"
+              ]
+            },
+            "description": "Lista los créditos de un cliente específico"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Process Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 500.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/credits/{{credit_id}}/payments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "credits",
+                "{{credit_id}}",
+                "payments"
+              ]
+            },
+            "description": "Procesa un pago sobre un préstamo o tarjeta de crédito.\nRN-06: en préstamos reduce outstandingBalance.\nRN-07: en tarjetas incrementa availableCredit."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Charges",
+      "item": [
+        {
+          "name": "Process Charge",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 250.00,\n  \"description\": \"Compra en supermercado\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/credits/{{credit_id}}/charges",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "credits",
+                "{{credit_id}}",
+                "charges"
+              ]
+            },
+            "description": "Registra un consumo sobre una tarjeta de crédito.\nRN-08: solo válido para type=CREDIT_CARD. Rechaza con 422 si el monto excede availableCredit."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Balance",
+      "item": [
+        {
+          "name": "Get Credit Balance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/credits/{{credit_id}}/balance",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "credits",
+                "{{credit_id}}",
+                "balance"
+              ]
+            },
+            "description": "Consulta el saldo o crédito disponible de un producto.\nRN-09: la forma de la respuesta varía según el tipo — préstamos retornan outstandingBalance, tarjetas retornan availableCredit y creditLimit."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8083",
+      "type": "string"
+    },
+    {
+      "key": "credit_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "customer_id",
+      "value": "665f1a2b3c4d5e6f7a8b9c0d",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,384 @@
+openapi: 3.0.3
+info:
+  title: Credit Service API
+  description: >
+    API REST para la gestión de productos de crédito bancario: préstamos
+    personales, préstamos empresariales y tarjetas de crédito.
+    Sigue el patrón database-per-service; la colección `credits` es propiedad
+    exclusiva de este microservicio.
+  version: 1.0.0
+  contact:
+    name: NTTData Bootcamp - Banking Project
+
+servers:
+  - url: http://localhost:8083
+    description: Entorno local directo
+  - url: http://localhost:8080/credits
+    description: A través del API Gateway
+
+tags:
+  - name: Credits
+    description: Operaciones CRUD y de negocio sobre productos de crédito
+
+paths:
+
+  /api/v1/credits:
+    post:
+      tags: [Credits]
+      summary: Crea un nuevo producto de crédito
+      description: >
+        Valida las reglas RN-01 a RN-05 antes de persistir: unicidad por tipo
+        de cliente, compatibilidad de tipo de crédito con tipo de cliente.
+      operationId: createCredit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditRequest'
+      responses:
+        '201':
+          description: Crédito creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+        '400':
+          description: Tipo de crédito incompatible con el tipo de cliente (RN-02)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: El cliente ya posee un crédito de ese tipo (RN-01 / RN-04)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags: [Credits]
+      summary: Lista todos los créditos
+      operationId: findAllCredits
+      responses:
+        '200':
+          description: Lista de créditos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditResponse'
+
+  /api/v1/credits/{id}:
+    parameters:
+      - $ref: '#/components/parameters/CreditId'
+
+    get:
+      tags: [Credits]
+      summary: Obtiene un crédito por ID
+      operationId: findCreditById
+      responses:
+        '200':
+          description: Crédito encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Credits]
+      summary: Actualiza un crédito existente
+      operationId: updateCredit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditRequest'
+      responses:
+        '200':
+          description: Crédito actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [Credits]
+      summary: Elimina (soft delete) un crédito
+      operationId: deleteCredit
+      responses:
+        '204':
+          description: Crédito eliminado correctamente
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/credits/customer/{customerId}:
+    get:
+      tags: [Credits]
+      summary: Lista los créditos de un cliente específico
+      operationId: findCreditsByCustomer
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del cliente en Customer Service
+      responses:
+        '200':
+          description: Créditos del cliente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditResponse'
+
+  /api/v1/credits/{id}/payments:
+    parameters:
+      - $ref: '#/components/parameters/CreditId'
+    post:
+      tags: [Credits]
+      summary: Procesa un pago sobre un préstamo o tarjeta de crédito
+      description: >
+        RN-06: en préstamos reduce outstandingBalance.
+        RN-07: en tarjetas incrementa availableCredit (sin superar creditLimit).
+      operationId: processPayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '200':
+          description: Pago procesado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/credits/{id}/charges:
+    parameters:
+      - $ref: '#/components/parameters/CreditId'
+    post:
+      tags: [Credits]
+      summary: Registra un consumo sobre una tarjeta de crédito
+      description: >
+        RN-08: solo válido para type=CREDIT_CARD. Rechaza con 422 si el monto
+        excede availableCredit.
+      operationId: processCharge
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargeRequest'
+      responses:
+        '200':
+          description: Consumo registrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          description: El consumo excede el crédito disponible (RN-08)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/credits/{id}/balance:
+    parameters:
+      - $ref: '#/components/parameters/CreditId'
+    get:
+      tags: [Credits]
+      summary: Consulta el saldo o crédito disponible de un producto
+      description: >
+        RN-09: la forma de la respuesta varía según el tipo — préstamos
+        retornan outstandingBalance, tarjetas retornan availableCredit y
+        creditLimit.
+      operationId: getCreditBalance
+      responses:
+        '200':
+          description: Información de saldo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+
+  parameters:
+    CreditId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Identificador único del crédito (MongoDB ObjectId)
+
+  responses:
+    NotFound:
+      description: El crédito solicitado no existe
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+
+    CreditType:
+      type: string
+      enum: [PERSONAL_LOAN, BUSINESS_LOAN, CREDIT_CARD]
+
+    CustomerType:
+      type: string
+      enum: [PERSONAL, BUSINESS]
+
+    CreditStatus:
+      type: string
+      enum: [ACTIVE, CLOSED, DEFAULTED]
+
+    CreditRequest:
+      type: object
+      required:
+        - customerId
+        - type
+      properties:
+        customerId:
+          type: string
+          description: Referencia al cliente en Customer Service
+          example: "665f1a2b3c4d5e6f7a8b9c0d"
+        type:
+          $ref: '#/components/schemas/CreditType'
+        amount:
+          type: number
+          format: double
+          minimum: 0
+          description: Monto aprobado. Requerido si type es un préstamo.
+          example: 15000.00
+        interestRate:
+          type: number
+          format: double
+          minimum: 0
+          example: 0.18
+        creditLimit:
+          type: number
+          format: double
+          minimum: 0
+          description: Límite total. Requerido si type=CREDIT_CARD.
+          example: 5000.00
+
+    CreditResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "665f1a2b3c4d5e6f7a8b9c0e"
+        creditNumber:
+          type: string
+          example: "CR-0001234"
+        type:
+          $ref: '#/components/schemas/CreditType'
+        customerId:
+          type: string
+        customerType:
+          $ref: '#/components/schemas/CustomerType'
+        amount:
+          type: number
+          format: double
+          nullable: true
+        outstandingBalance:
+          type: number
+          format: double
+          nullable: true
+        interestRate:
+          type: number
+          format: double
+        creditLimit:
+          type: number
+          format: double
+          nullable: true
+        availableCredit:
+          type: number
+          format: double
+          nullable: true
+        status:
+          $ref: '#/components/schemas/CreditStatus'
+
+    PaymentRequest:
+      type: object
+      required: [amount]
+      properties:
+        amount:
+          type: number
+          format: double
+          exclusiveMinimum: true
+          minimum: 0
+          example: 500.00
+
+    ChargeRequest:
+      type: object
+      required: [amount]
+      properties:
+        amount:
+          type: number
+          format: double
+          exclusiveMinimum: true
+          minimum: 0
+          example: 250.00
+        description:
+          type: string
+          example: "Compra en supermercado"
+
+    BalanceResponse:
+      type: object
+      properties:
+        creditId:
+          type: string
+        type:
+          $ref: '#/components/schemas/CreditType'
+        outstandingBalance:
+          type: number
+          format: double
+          nullable: true
+          description: Solo presente para PERSONAL_LOAN y BUSINESS_LOAN
+        creditLimit:
+          type: number
+          format: double
+          nullable: true
+          description: Solo presente para CREDIT_CARD
+        availableCredit:
+          type: number
+          format: double
+          nullable: true
+          description: Solo presente para CREDIT_CARD
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: "Not Found"
+        message:
+          type: string
+          example: "Credit not found with id: 665f1a2b3c4d5e6f7a8b9c0e"
+        timestamp:
+          type: string
+          format: date-time
