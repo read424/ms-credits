@@ -1,6 +1,6 @@
 package com.bootcamp.ms_credits.infrastructure.adapters.outbound.client;
 
-import com.bootcamp.ms_credits.application.ports.out.CustomerLookupPort;
+import com.bootcamp.ms_credits.application.ports.output.CustomerLookupPort;
 import com.bootcamp.ms_credits.domain.exception.ExternalServiceUnavailableException;
 import com.bootcamp.ms_credits.domain.model.CustomerType;
 import com.bootcamp.ms_credits.infrastructure.adapters.outbound.client.dto.CustomerClientResponse;

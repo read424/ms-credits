@@ -1,7 +1,7 @@
 package com.bootcamp.ms_credits.application.service;
 
-import com.bootcamp.ms_credits.application.ports.out.CreditRepositoryPort;
-import com.bootcamp.ms_credits.application.ports.out.CustomerLookupPort;
+import com.bootcamp.ms_credits.application.ports.output.CreditRepositoryPort;
+import com.bootcamp.ms_credits.application.ports.output.CustomerLookupPort;
 import com.bootcamp.ms_credits.domain.exception.*;
 import com.bootcamp.ms_credits.domain.model.*;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +29,7 @@ class CreditServiceImplTest {
     private CustomerLookupPort customerLookup;
 
     @InjectMocks
-    private CreditServiceImpl service;
+    private CreditService service;
 
     // ─────────────────────────────────────────────────────────── CREATE CREDIT
 

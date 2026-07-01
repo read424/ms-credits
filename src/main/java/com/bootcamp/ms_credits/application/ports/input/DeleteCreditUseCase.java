@@ -1,4 +1,4 @@
-package com.bootcamp.ms_credits.application.ports.in;
+package com.bootcamp.ms_credits.application.ports.input;
 
 import reactor.core.publisher.Mono;
 

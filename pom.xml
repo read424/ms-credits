@@ -137,6 +137,11 @@
 			<artifactId>resilience4j-timelimiter</artifactId>
 		</dependency>
 
+		<!-- Reactor Kafka (Pure reactive, no Spring Kafka) -->
+		<dependency>
+			<groupId>io.projectreactor.kafka</groupId>
+			<artifactId>reactor-kafka</artifactId>
+		</dependency>
 
 		<!-- Testing -->
 		<dependency>

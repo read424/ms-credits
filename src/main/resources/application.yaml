@@ -12,6 +12,13 @@ spring:
       uri: mongodb://localhost:27017/ms_credits
       auto-index-creation: true
 
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
   # WebFlux Configuration
   webflux:
     base-path: /
@@ -154,6 +161,13 @@ resilience4j:
 
       externalApi:
         timeout-duration: 5s
+
+# Kafka Topics Configuration
+kafka:
+  topics:
+    credit-created: credit.created
+    credit-payment-completed: credit.payment.completed
+    credit-charge-completed: credit.charge.completed
 
 # Logging Configuration
 logging:

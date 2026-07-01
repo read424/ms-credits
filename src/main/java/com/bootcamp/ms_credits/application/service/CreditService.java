@@ -1,15 +1,20 @@
 package com.bootcamp.ms_credits.application.service;
 
-import com.bootcamp.ms_credits.application.ports.in.*;
-import com.bootcamp.ms_credits.application.ports.out.CreditRepositoryPort;
-import com.bootcamp.ms_credits.application.ports.out.CustomerLookupPort;
+import com.bootcamp.ms_credits.application.ports.input.*;
+import com.bootcamp.ms_credits.application.ports.output.CreditRepositoryPort;
+import com.bootcamp.ms_credits.application.ports.output.CustomerLookupPort;
+import com.bootcamp.ms_credits.application.ports.output.CreditEventPublisherPort;
 import com.bootcamp.ms_credits.domain.exception.*;
 import com.bootcamp.ms_credits.domain.model.*;
+import com.bootcamp.ms_credits.domain.model.event.CreditCreatedEvent;
+import com.bootcamp.ms_credits.domain.model.event.CreditPaymentCompletedEvent;
+import com.bootcamp.ms_credits.domain.model.event.CreditChargeCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -18,7 +23,7 @@ import java.util.UUID;
  */
 @Service
 @RequiredArgsConstructor
-public class CreditServiceImpl implements
+public class CreditService implements
         CreateCreditUseCase,
         FindCreditUseCase,
         UpdateCreditUseCase,
@@ -28,6 +33,7 @@ public class CreditServiceImpl implements
 
     private final CreditRepositoryPort creditRepository;
     private final CustomerLookupPort customerLookup;
+    private final CreditEventPublisherPort eventPublisher;
 
     // ------------------------------------------------------------------ CREATE
     /**
@@ -52,7 +58,25 @@ public class CreditServiceImpl implements
                     } else {
                         validated.setOutstandingBalance(validated.getAmount());
                     }
-                    return creditRepository.save(validated);
+                    return creditRepository.save(validated)
+                            .flatMap(savedCredit -> {
+                                CreditCreatedEvent event = CreditCreatedEvent.builder()
+                                        .id(savedCredit.getId())
+                                        .creditNumber(savedCredit.getCreditNumber())
+                                        .customerId(savedCredit.getCustomerId())
+                                        .type(savedCredit.getType().name())
+                                        .amount(savedCredit.getAmount())
+                                        .outstandingBalance(savedCredit.getOutstandingBalance())
+                                        .interestRate(savedCredit.getInterestRate())
+                                        .creditLimit(savedCredit.getCreditLimit())
+                                        .availableCredit(savedCredit.getAvailableCredit())
+                                        .customerType(savedCredit.getCustomerType().name())
+                                        .status(savedCredit.getStatus().name())
+                                        .createdAt(LocalDateTime.now())
+                                        .build();
+                                return eventPublisher.publishCreditCreated(event)
+                                        .thenReturn(savedCredit);
+                            });
                 });
     }
 
@@ -117,7 +141,22 @@ public class CreditServiceImpl implements
                     }
                     return credit;
                 })
-                .flatMap(creditRepository::save);
+                .flatMap(creditRepository::save)
+                .flatMap(updatedCredit -> {
+                    CreditPaymentCompletedEvent event = CreditPaymentCompletedEvent.builder()
+                            .id(updatedCredit.getId())
+                            .creditNumber(updatedCredit.getCreditNumber())
+                            .customerId(updatedCredit.getCustomerId())
+                            .type(updatedCredit.getType().name())
+                            .amount(amount)
+                            .newOutstandingBalance(updatedCredit.getOutstandingBalance())
+                            .newAvailableCredit(updatedCredit.getAvailableCredit())
+                            .transactionId(generateTransactionId())
+                            .completedAt(LocalDateTime.now())
+                            .build();
+                    return eventPublisher.publishPaymentCompleted(event)
+                            .thenReturn(updatedCredit);
+                });
     }
 
     // ------------------------------------------------------------------ CHARGE
@@ -137,7 +176,21 @@ public class CreditServiceImpl implements
                                 "Charge amount " + amount + " exceeds available credit " + credit.getAvailableCredit()));
                     }
                     credit.setAvailableCredit(credit.getAvailableCredit() - amount);
-                    return creditRepository.save(credit);
+                    return creditRepository.save(credit)
+                            .flatMap(updatedCredit -> {
+                                CreditChargeCompletedEvent event = CreditChargeCompletedEvent.builder()
+                                        .id(updatedCredit.getId())
+                                        .creditNumber(updatedCredit.getCreditNumber())
+                                        .customerId(updatedCredit.getCustomerId())
+                                        .type(updatedCredit.getType().name())
+                                        .amount(amount)
+                                        .newAvailableCredit(updatedCredit.getAvailableCredit())
+                                        .transactionId(generateTransactionId())
+                                        .completedAt(LocalDateTime.now())
+                                        .build();
+                                return eventPublisher.publishChargeCompleted(event)
+                                        .thenReturn(updatedCredit);
+                            });
                 });
     }
 
@@ -189,5 +242,9 @@ public class CreditServiceImpl implements
 
     private String generateCreditNumber() {
         return "CR-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
+
+    private String generateTransactionId() {
+        return "tx-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }

@@ -1,0 +1,89 @@
+2026-06-22 07:15:35 [main] INFO  c.b.ms_credits.MsCreditsApplication - Starting MsCreditsApplication using Java 21.0.6 with PID 322635 (/home/developer01/Descargas/bootcamp-nttdata/ms-credits/target/classes started by developer01 in /home/developer01/Descargas/bootcamp-nttdata/ms-credits)
+2026-06-22 07:15:35 [main] DEBUG c.b.ms_credits.MsCreditsApplication - Running with Spring Boot v3.5.15, Spring v6.2.19
+2026-06-22 07:15:35 [main] INFO  c.b.ms_credits.MsCreditsApplication - The following 1 profile is active: "dev"
+2026-06-22 07:15:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Reactive MongoDB repositories in DEFAULT mode.
+2026-06-22 07:15:36 [main] DEBUG o.s.d.r.c.RepositoryConfigurationDelegate - Scanning for Reactive MongoDB repositories in packages com.bootcamp.ms_credits.
+2026-06-22 07:15:36 [main] DEBUG o.s.d.r.c.RepositoryComponentProvider - Identified candidate component class: file [/home/developer01/Descargas/bootcamp-nttdata/ms-credits/target/classes/com/bootcamp/ms_credits/infrastructure/adapters/outbound/persistence/repository/CreditMongoRepository.class]
+2026-06-22 07:15:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 86 ms. Found 1 Reactive MongoDB repository interface.
+2026-06-22 07:15:36 [main] INFO  o.s.cloud.context.scope.GenericScope - BeanFactory id=a8707393-0f50-3623-b303-c60c6222f8e0
+2026-06-22 07:15:36 [main] INFO  org.mongodb.driver.client - MongoClient with metadata {"driver": {"name": "mongo-java-driver|reactive-streams|spring-boot", "version": "5.5.2"}, "os": {"type": "Linux", "name": "Linux", "architecture": "amd64", "version": "6.1.0-49-amd64"}, "platform": "Java/Oracle Corporation/21.0.6+8-LTS-188"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, transportSettings=NettyTransportSettings{eventLoopGroup=io.netty.channel.nio.NioEventLoopGroup@2ffa91dc, socketChannelClass=null, allocator=null, sslContext=null}, commandListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener@78d6c244], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, EnumCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@448086ab, com.mongodb.Jep395RecordCodecProvider@16e907b6, com.mongodb.KotlinCodecProvider@6de610c6]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener@23ec2bdc], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=JAVA_LEGACY, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
+2026-06-22 07:15:36 [cluster-ClusterId{value='6a3927683cee5836688f8ba2', description='null'}-localhost:27017] INFO  org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=21, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=38502889, minRoundTripTimeNanos=0}
+2026-06-22 07:15:36 [main] DEBUG o.s.d.m.c.i.ReactiveMongoPersistentEntityIndexCreator - Analyzing class class com.bootcamp.ms_credits.infrastructure.adapters.outbound.persistence.document.CreditDocument for index information
+2026-06-22 07:15:36 [main] DEBUG o.s.d.r.c.s.RepositoryFactorySupport - Initializing repository instance for com.bootcamp.ms_credits.infrastructure.adapters.outbound.persistence.repository.CreditMongoRepository…
+2026-06-22 07:15:36 [main] DEBUG o.s.d.r.c.s.RepositoryFactorySupport - Finished creation of repository instance for com.bootcamp.ms_credits.infrastructure.adapters.outbound.persistence.repository.CreditMongoRepository.
+2026-06-22 07:15:37 [main] INFO  c.b.m.i.config.Resilience4jConfig - Circuit Breaker 'customerService' registered successfully
+2026-06-22 07:15:37 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 30 endpoints beneath base path '/actuator'
+2026-06-22 07:15:37 [main] INFO  o.s.c.n.e.c.DiscoveryClientOptionalArgsConfiguration - Eureka HTTP Client uses RestTemplate.
+2026-06-22 07:15:37 [main] WARN  o.s.c.l.c.LoadBalancerCacheAutoConfiguration$LoadBalancerCaffeineWarnLogger - Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-06-22 07:15:37 [main] INFO  o.s.c.n.eureka.InstanceInfoFactory - Setting initial instance status as: STARTING
+2026-06-22 07:15:37 [main] INFO  c.netflix.discovery.DiscoveryClient - Initializing Eureka in region us-east-1
+2026-06-22 07:15:37 [main] INFO  c.netflix.discovery.DiscoveryClient - Disable delta property : false
+2026-06-22 07:15:37 [main] INFO  c.netflix.discovery.DiscoveryClient - Single vip registry refresh property : null
+2026-06-22 07:15:37 [main] INFO  c.netflix.discovery.DiscoveryClient - Force full registry fetch : false
+2026-06-22 07:15:37 [main] INFO  c.netflix.discovery.DiscoveryClient - Application is null : false
+2026-06-22 07:15:37 [main] INFO  c.netflix.discovery.DiscoveryClient - Registered Applications size is zero : true
+2026-06-22 07:15:37 [main] INFO  c.netflix.discovery.DiscoveryClient - Application version is -1: true
+2026-06-22 07:15:37 [main] INFO  c.netflix.discovery.DiscoveryClient - Getting all instance registry info from the eureka server
+2026-06-22 07:15:38 [main] INFO  c.netflix.discovery.DiscoveryClient - The response status is 200
+2026-06-22 07:15:38 [main] INFO  c.netflix.discovery.DiscoveryClient - Starting heartbeat executor: renew interval is: 10
+2026-06-22 07:15:38 [main] INFO  c.n.discovery.InstanceInfoReplicator - InstanceInfoReplicator onDemand update allowed rate per min is 4
+2026-06-22 07:15:38 [main] INFO  c.netflix.discovery.DiscoveryClient - Discovery Client initialized at timestamp 1782130538032 with initial instances count: 3
+2026-06-22 07:15:38 [main] INFO  o.s.c.n.e.s.EurekaServiceRegistry - Registering application MS-CREDITS with eureka with status UP
+2026-06-22 07:15:38 [main] INFO  c.netflix.discovery.DiscoveryClient - Saw local status change event StatusChangeEvent [timestamp=1782130538035, current=UP, previous=STARTING]
+2026-06-22 07:15:38 [DiscoveryClient-InstanceInfoReplicator-%d] INFO  c.netflix.discovery.DiscoveryClient - DiscoveryClient_MS-CREDITS/debian-dev:ms-credits:8083: registering service...
+2026-06-22 07:15:38 [DiscoveryClient-InstanceInfoReplicator-%d] INFO  c.netflix.discovery.DiscoveryClient - DiscoveryClient_MS-CREDITS/debian-dev:ms-credits:8083 - registration status: 204
+2026-06-22 07:15:38 [main] INFO  o.s.b.w.e.netty.NettyWebServer - Netty started on port 8083 (http)
+2026-06-22 07:15:38 [main] INFO  o.s.c.n.e.s.EurekaAutoServiceRegistration - Updating port to 8083
+2026-06-22 07:15:38 [main] INFO  c.b.ms_credits.MsCreditsApplication - Started MsCreditsApplication in 3.139 seconds (process running for 3.53)
+2026-06-22 07:39:48 [cluster-ClusterId{value='6a3927683cee5836688f8ba2', description='null'}-localhost:27017] INFO  org.mongodb.driver.cluster - Exception in monitor thread while connecting to server localhost:27017
+com.mongodb.MongoSocketReadTimeoutException: Timeout while receiving message
+	at com.mongodb.internal.connection.netty.NettyStream$InboundBufferHandler.exceptionCaught(NettyStream.java:443)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:346)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:325)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:317)
+	at com.mongodb.internal.connection.netty.NettyStream$ReadTimeoutTask.run(NettyStream.java:570)
+	at io.netty.util.concurrent.PromiseTask.runTask(PromiseTask.java:98)
+	at io.netty.util.concurrent.ScheduledFutureTask.run(ScheduledFutureTask.java:160)
+	at io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:173)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:166)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:472)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:569)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: io.netty.handler.timeout.ReadTimeoutException
+2026-06-22 07:39:52 [cluster-ClusterId{value='6a3927683cee5836688f8ba2', description='null'}-localhost:27017] INFO  org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=21, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=3044086743, minRoundTripTimeNanos=0}
+2026-06-22 07:40:46 [cluster-ClusterId{value='6a3927683cee5836688f8ba2', description='null'}-localhost:27017] INFO  org.mongodb.driver.cluster - Exception in monitor thread while connecting to server localhost:27017
+com.mongodb.MongoSocketReadTimeoutException: Timeout while receiving message
+	at com.mongodb.internal.connection.netty.NettyStream$InboundBufferHandler.exceptionCaught(NettyStream.java:443)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:346)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:325)
+	at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:317)
+	at com.mongodb.internal.connection.netty.NettyStream$ReadTimeoutTask.run(NettyStream.java:570)
+	at io.netty.util.concurrent.PromiseTask.runTask(PromiseTask.java:98)
+	at io.netty.util.concurrent.ScheduledFutureTask.run(ScheduledFutureTask.java:160)
+	at io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:173)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:166)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:472)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:569)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: io.netty.handler.timeout.ReadTimeoutException
+2026-06-22 07:42:14 [cluster-ClusterId{value='6a3927683cee5836688f8ba2', description='null'}-localhost:27017] INFO  org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=21, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=9253939258, minRoundTripTimeNanos=0}
+2026-06-22 21:23:27 [SpringApplicationShutdownHook] INFO  o.s.c.n.e.s.EurekaServiceRegistry - Unregistering application MS-CREDITS with eureka with status DOWN
+2026-06-22 21:23:27 [SpringApplicationShutdownHook] INFO  c.netflix.discovery.DiscoveryClient - Saw local status change event StatusChangeEvent [timestamp=1782181407182, current=DOWN, previous=UP]
+2026-06-22 21:23:27 [DiscoveryClient-InstanceInfoReplicator-%d] INFO  c.netflix.discovery.DiscoveryClient - DiscoveryClient_MS-CREDITS/debian-dev:ms-credits:8083: registering service...
+2026-06-22 21:23:27 [DiscoveryClient-InstanceInfoReplicator-%d] INFO  c.netflix.discovery.DiscoveryClient - DiscoveryClient_MS-CREDITS/debian-dev:ms-credits:8083 - registration status: 204
+2026-06-22 21:23:27 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.netty.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-06-22 21:23:27 [netty-shutdown] INFO  o.s.b.w.e.netty.GracefulShutdown - Graceful shutdown complete
+2026-06-22 21:23:27 [cluster-ClusterId{value='6a3927683cee5836688f8ba2', description='null'}-localhost:27017] INFO  org.mongodb.driver.cluster - Exception in monitor thread while connecting to server localhost:27017
+com.mongodb.MongoNodeIsRecoveringException: Command failed with error 11600 (InterruptedAtShutdown): 'interrupted at shutdown' on server localhost:27017. The full response is {"ok": 0.0, "errmsg": "interrupted at shutdown", "code": 11600, "codeName": "InterruptedAtShutdown"}
+	at com.mongodb.internal.connection.ProtocolHelper.createSpecialException(ProtocolHelper.java:264)
+	at com.mongodb.internal.connection.ProtocolHelper.getCommandFailureException(ProtocolHelper.java:206)
+	at com.mongodb.internal.connection.InternalStreamConnection.receiveCommandMessageResponse(InternalStreamConnection.java:520)
+	at com.mongodb.internal.connection.InternalStreamConnection.receive(InternalStreamConnection.java:469)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.lookupServerDescription(DefaultServerMonitor.java:249)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.run(DefaultServerMonitor.java:176)

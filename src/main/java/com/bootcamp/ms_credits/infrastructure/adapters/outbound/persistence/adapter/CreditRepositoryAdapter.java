@@ -1,6 +1,6 @@
 package com.bootcamp.ms_credits.infrastructure.adapters.outbound.persistence.adapter;
 
-import com.bootcamp.ms_credits.application.ports.out.CreditRepositoryPort;
+import com.bootcamp.ms_credits.application.ports.output.CreditRepositoryPort;
 import com.bootcamp.ms_credits.domain.model.Credit;
 import com.bootcamp.ms_credits.domain.model.CreditType;
 import com.bootcamp.ms_credits.infrastructure.adapters.outbound.persistence.mapper.CreditDocumentMapper;

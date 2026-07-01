@@ -1,6 +1,6 @@
 package com.bootcamp.ms_credits.infrastructure.adapters.inbound.rest;
 
-import com.bootcamp.ms_credits.application.ports.in.*;
+import com.bootcamp.ms_credits.application.ports.input.*;
 import com.bootcamp.ms_credits.domain.model.CreditType;
 import com.bootcamp.ms_credits.infrastructure.adapters.inbound.rest.dto.*;
 import com.bootcamp.ms_credits.infrastructure.adapters.inbound.rest.mapper.CreditDtoMapper;
