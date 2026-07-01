@@ -1,0 +1,130 @@
+version: '3.9'
+
+services:
+  # MongoDB - Base de datos principal
+  mongodb:
+    image: mongo:8.3.4
+    container_name: mongodb-credits
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: bootcamp_credits_prod_2024
+      MONGO_INITDB_DATABASE: ms_credits_prod
+    volumes:
+      - mongodb_credits_data:/data/db
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - bootcamp-network
+    healthcheck:
+      test: echo 'db.adminCommand("ping")' | mongosh -u admin -p bootcamp_credits_prod_2024 localhost:27017/admin
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis - Cache y sesiones
+  redis:
+    image: redis:7.2.4-alpine
+    container_name: redis-credits
+    restart: unless-stopped
+    ports:
+      - "6381:6379"
+    command: redis-server --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - bootcamp-network
+    healthcheck:
+      test: redis-cli -a eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81 ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka KRaft - Message Broker
+  kafka:
+    image: apache/kafka:4.2.0
+    container_name: kafka_broker
+    restart: always
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_CLUSTER_ID: 'r4zt_wrqTRuT7W2NJsB_GA'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka_broker:9093'
+      KAFKA_LISTENERS: 'EXTERNAL://:9092,INTERNAL://:9094,CONTROLLER://:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'EXTERNAL://kafka_broker:9092,INTERNAL://kafka_broker:9094'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_BYTES: 130023424
+      KAFKA_LOG_RETENTION_MS: 432000000
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    volumes:
+      - kafka_data:/bitnami/kafka
+    ports:
+      - "9092:9092"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - bootcamp-network
+    healthcheck:
+      test: kafka-broker-api-versions.sh --bootstrap-server localhost:9092
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ms-credits Microservice
+  ms-credits:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ms-credits:latest
+    container_name: ms-credits
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_REDIS_HOST: redis-credits
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka_broker:9094
+      EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://service-eureka:8761/eureka/
+      JAVA_OPTS: -Xmx512m -Xms256m
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - bootcamp-network
+
+volumes:
+  mongodb_credits_data:
+  kafka_data:
+
+networks:
+  bootcamp-network:
+    name: bootcamp-network
+    external: true
