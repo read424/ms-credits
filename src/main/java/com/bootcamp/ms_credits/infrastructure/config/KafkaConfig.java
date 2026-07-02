@@ -18,17 +18,17 @@ public class KafkaConfig {
     private String bootstrapServers;
 
     @Bean
-    public KafkaSender<String, String> kafkaSender() {
+    public KafkaSender<String, Object> kafkaSender() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonObjectSerializer.class);
         configProps.put(ProducerConfig.ACKS_CONFIG, "all");
         configProps.put(ProducerConfig.RETRIES_CONFIG, 3);
         configProps.put(ProducerConfig.LINGER_MS_CONFIG, 10);
         configProps.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
 
-        SenderOptions<String, String> senderOptions = SenderOptions.create(configProps);
+        SenderOptions<String, Object> senderOptions = SenderOptions.create(configProps);
         return KafkaSender.create(senderOptions);
     }
 }
