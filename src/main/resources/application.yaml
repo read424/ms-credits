@@ -2,7 +2,7 @@ spring:
   application:
     name: ms-credits
   config:
-    import: ${SPRING_CONFIG_IMPORT:configserver:http://localhost:8888}
+    import: ${SPRING_CONFIG_IMPORT:configserver:http://service-config-server:8888}
 
   cloud:
     config:
