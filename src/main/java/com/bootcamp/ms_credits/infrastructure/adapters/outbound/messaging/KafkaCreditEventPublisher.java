@@ -18,7 +18,7 @@ import reactor.kafka.sender.SenderRecord;
 @RequiredArgsConstructor
 public class KafkaCreditEventPublisher implements CreditEventPublisherPort {
 
-    private final KafkaSender<String, String> kafkaSender;
+    private final KafkaSender<String, Object> kafkaSender;
     private final ObjectMapper objectMapper;
 
     @Value("${kafka.topics.credit-created}")
@@ -58,13 +58,9 @@ public class KafkaCreditEventPublisher implements CreditEventPublisherPort {
     }
 
     private Mono<Void> sendMessage(String topic, String key, Object event) {
-        try {
-            String value = objectMapper.writeValueAsString(event);
-            SenderRecord<String, String, Void> record = SenderRecord.create(topic, null, null, key, value, null);
+        return Mono.defer(() -> {
+            SenderRecord<String, Object, Void> record = SenderRecord.create(topic, null, null, key, event, null);
             return kafkaSender.send(Mono.just(record)).then();
-        } catch (Exception e) {
-            log.error("Error serializing event", e);
-            return Mono.error(e);
-        }
+        });
     }
 }
