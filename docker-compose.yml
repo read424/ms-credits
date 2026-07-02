@@ -59,6 +59,7 @@ services:
       - "8083:8083"
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      SPRING_CONFIG_IMPORT: configserver:http://service-config-server:8888
       SPRING_REDIS_HOST: redis-credits
       SPRING_REDIS_PORT: 6379
       SPRING_REDIS_PASSWORD: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
