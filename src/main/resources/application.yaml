@@ -9,7 +9,6 @@ spring:
   # MongoDB Configuration
   data:
     mongodb:
-      uri: mongodb://localhost:27017/ms_credits
       auto-index-creation: true
 
   # Kafka Configuration
