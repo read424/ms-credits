@@ -1,35 +1,20 @@
-# Stage 1: Build
 FROM maven:3.9-eclipse-temurin-17 AS builder
 
-WORKDIR /build
+WORKDIR /workspace
 
-COPY pom.xml .
 COPY .mvn .mvn
 COPY mvnw .
+COPY pom.xml .
 COPY src src
 
-RUN chmod +x mvnw && \
-    ./mvnw clean package -DskipTests -q
+RUN chmod +x mvnw && ./mvnw clean package -DskipTests=true
 
-# Stage 2: Runtime
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-# Variables de entorno para la aplicación
-ENV SPRING_PROFILES_ACTIVE=docker \
-    JAVA_OPTS="-Xms256m -Xmx512m"
+COPY --from=builder /workspace/target/ms-credits-*.jar app.jar
 
-# Copiar JAR del stage anterior
-COPY --from=builder /build/target/ms-credits-*.jar app.jar
+EXPOSE 8083
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
-
-# Puerto expuesto
-EXPOSE 8080
-
-# Comando de inicio
-ENTRYPOINT ["java", "-jar"]
-CMD ["app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
