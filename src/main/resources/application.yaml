@@ -13,13 +13,6 @@ spring:
     mongodb:
       auto-index-creation: true
 
-  # Kafka Configuration
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
   # WebFlux Configuration
   webflux:
     base-path: /
@@ -35,9 +28,12 @@ server:
 
 eureka:
   client:
+    enabled: true
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE:http://service-eureka:8761/eureka/}
   instance:
+    ipAddress: ms-credits
+    hostName: ms-credits
     preferIpAddress: true
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 30
