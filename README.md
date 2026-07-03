@@ -1,405 +1,129 @@
-# ms-credits - Microservicio de Créditos
+# MS-Credits Microservice
 
-Microservicio reactivo de gestión de créditos basado en Spring Boot 3.5.15, WebFlux, MongoDB y Kafka KRaft.
+## Descripción
 
-## 📋 Requisitos Previos
+**MS-Credits** es el microservicio responsable de gestionar el ciclo de vida completo de los créditos bancarios en la plataforma de banking. Implementa una arquitectura hexagonal con Domain Driven Design (DDD) y utiliza un enfoque completamente reactivo con Spring WebFlux.
 
-- **Docker** >= 20.10
-- **Docker Compose** >= 2.0
-- **Java 17** (para desarrollo local)
-- **Maven 3.9+** (para desarrollo local)
-- Red Docker `bootcamp-network` creada
+### Responsabilidades Principales
 
-## 🚀 Guía Rápida de Inicio
+- Creación y gestión de créditos bancarios
+- Cálculo de cuotas y planes de pago
+- Validación de solicitudes de crédito
+- Procesamiento de pagos y cobros
+- Publicación de eventos de crédito a Kafka
+- Almacenamiento de historial de créditos en MongoDB
+- Caching de información de créditos con Redis
+- Exposición de API REST para gestión de créditos
 
-### 1. Crear la Red Docker (Una sola vez)
+## Stack Tecnológico
+
+- **Java 17** con Spring Boot 3.5.x
+- **Spring WebFlux** - Programación reactiva no bloqueante
+- **Spring Cloud** - Service discovery (Eureka), configuración centralizada
+- **MongoDB** - Base de datos NoSQL para persistencia de créditos
+- **Redis** - Caching distribuido para consultas frecuentes
+- **Kafka** - Message broker para arquitectura event-driven
+- **Resilience4j** - Circuit breaker, retry, rate limiter y time limiter
+- **OpenTelemetry** - Observabilidad y trazabilidad distribuida
+
+## Requisitos Previos
+
+- Docker y Docker Compose
+- Maven 3.9+
+- Java 17 JDK
+- Red Docker externa `bootcamp-network`
+
+## Levantamiento Local
+
+### 1. Crear la red Docker (si no existe)
 
 ```bash
 docker network create bootcamp-network
 ```
 
-Verificar que la red fue creada:
+### 2. Levantar infraestructura (MongoDB, Redis)
+
 ```bash
-docker network ls | grep bootcamp-network
+docker compose up -d mongodb redis
 ```
 
-### 2. Navegar al Directorio del Proyecto
+### 3. Iniciar el microservicio
 
 ```bash
-cd /home/developer01/Descargas/bootcamp-nttdata/ms-credits
+docker compose up -d ms-credits
 ```
 
-### 3. Construir la Imagen Docker
+## Configuración
+
+### Variables de Entorno
+
+- `SPRING_PROFILES_ACTIVE: prod`
+- `SPRING_CONFIG_IMPORT: configserver:http://service-config-server:8888`
+- `EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://service-eureka:8761/eureka/`
+- `SPRING_REDIS_HOST: redis-credits`
+- `SPRING_REDIS_PORT: 6381`
+- `SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka_broker:9092`
+
+### MongoDB (desde Config Server)
+
+- Host: `mongodb-credits`
+- Database: `ms_credits_prod`
+- Usuario: `admin`
+- Contraseña: Encriptada
+
+## Endpoints
 
 ```bash
-docker build -t ms-credits:latest .
-```
-
-O dejar que docker-compose la construya automáticamente en el siguiente paso.
-
-### 4. Levantar los Servicios
-
-```bash
-docker-compose up -d
-```
-
-Esto iniciará en segundo plano:
-- ✅ **MongoDB** (puerto 27017)
-- ✅ **Redis** (puerto 6381)
-- ✅ **Kafka** (puerto 9092)
-- ✅ **ms-credits** (puerto 8083)
-
-### 5. Verificar que los Servicios Estén Activos
-
-```bash
-docker-compose ps
-```
-
-Deberías ver todos los servicios en estado `Up`.
-
-### 6. Validar la Salud del Microservicio
-
-```bash
+# Health Check
 curl http://localhost:8083/actuator/health
+
+# Métricas Prometheus
+curl http://localhost:8083/actuator/prometheus
 ```
 
-Respuesta esperada:
-```json
-{
-  "status": "UP"
-}
-```
+## Puertos
 
-### 7. Acceder a la API
+- **8083** - API REST
+- **27019** - MongoDB (container)
+- **6381** - Redis (container)
 
-- **Swagger/OpenAPI**: http://localhost:8080/swagger-ui.html
-- **Health Check**: http://localhost:8080/actuator/health
-- **Metrics**: http://localhost:8080/actuator/prometheus
-- **Info**: http://localhost:8080/actuator/info
+## Service Discovery
 
-## 📚 Guías Detalladas
+Registrado en Eureka como: `ms-credits`
 
-### Ver Logs en Tiempo Real
+## Desenvolvimento
 
 ```bash
-# Todos los servicios
-docker-compose logs -f
+# Compilar
+mvn clean package -DskipTests
 
-# Solo ms-credits
-docker-compose logs -f ms-credits
+# Buildear imagen
+docker build -t read424/ms-credits:latest .
+docker tag read424/ms-credits:latest read424/ms-credits:v1.0.0
 
-# Solo MongoDB
-docker-compose logs -f mongodb
+# Levantar
+docker compose up -d ms-credits
 
-# Últimas 50 líneas
-docker-compose logs --tail=50 ms-credits
+# Logs
+docker logs -f ms-credits
 ```
 
-### Detener los Servicios
+## Kafka Topics
 
-```bash
-# Detener sin eliminar volúmenes (datos persisten)
-docker-compose stop
+**Producidos:**
+- `credit.created`
+- `credit.payment.completed`
+- `credit.charge.completed`
 
-# Reanudar servicios detenidos
-docker-compose start
+## Resilience Patterns
 
-# Detener y eliminar todo (incluyendo volúmenes)
-docker-compose down -v
-```
+- Circuit Breaker (50% failure threshold)
+- Retry (3-5 intentos)
+- Rate Limiter (50-100 calls/min)
+- Time Limiter (2-5 segundos)
 
-### Reconstruir la Imagen
+## References
 
-Si realizaste cambios en el código:
-
-```bash
-docker-compose down
-docker build -t ms-credits:latest .
-docker-compose up -d
-```
-
-O simplemente:
-
-```bash
-docker-compose up -d --build
-```
-
-## 🗄️ Acceder a las Bases de Datos
-
-### MongoDB
-
-```bash
-# Conectarse a MongoDB
-docker exec -it mongodb-credits mongosh -u admin -p bootcamp_credits_prod_2024
-
-# Una vez conectado:
-show databases
-use ms_credits_prod
-db.getCollectionNames()
-```
-
-### Redis
-
-```bash
-# Conectarse a Redis
-docker exec -it redis-credits redis-cli -a eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
-
-# Ver claves
-KEYS *
-```
-
-## 🎯 Kafka
-
-### Listar Tópicos Creados
-
-```bash
-docker exec kafka_broker kafka-topics.sh --bootstrap-server kafka_broker:9094 --list
-```
-
-### Crear un Tópico Manualmente
-
-```bash
-docker exec kafka_broker kafka-topics.sh --bootstrap-server kafka_broker:9094 \
-  --create --topic test-topic --partitions 1 --replication-factor 1
-```
-
-### Consumir Mensajes de un Tópico
-
-```bash
-docker exec kafka_broker kafka-console-consumer.sh \
-  --bootstrap-server kafka_broker:9094 \
-  --topic credit.created \
-  --from-beginning
-```
-
-## 🔧 Configuración
-
-### Archivo de Configuración Principal
-
-Ubicación: `src/main/resources/application-prod.yaml`
-
-**Nota**: La configuración de MongoDB (host, puerto, credenciales) se obtiene del **Cloud Config Server** con valores encriptados. El archivo local solo contiene configuración básica.
-
-Principales valores en archivo local:
-- **Puerto del Microservicio**: `8083`
-- **Auto-index Creation MongoDB**: `true`
-- **Kafka Bootstrap**: Obtenido de variable de entorno
-- **Redis**: Obtenido de variables de entorno
-
-Valores sensibles (desde Cloud Config Server):
-- **MongoDB Host, Port, Database, Credenciales**: Centralizadas y encriptadas
-- **Redis Password**: Obtenido de variables de entorno
-
-### Variables de Entorno (docker-compose.yml)
-
-Para modificar la memoria JVM:
-```yaml
-environment:
-  JAVA_OPTS: -Xmx512m -Xms256m
-```
-
-Para cambiar el perfil activo:
-```yaml
-environment:
-  SPRING_PROFILES_ACTIVE: prod
-```
-
-## 🐛 Troubleshooting
-
-### El contenedor no inicia
-
-**Síntoma**: `docker-compose up` muestra errores
-
-**Solución**:
-```bash
-# Ver logs detallados
-docker-compose logs ms-credits
-
-# Verificar que la red existe
-docker network ls | grep bootcamp-network
-
-# Reconstruir sin cachés
-docker-compose up --build --no-cache
-```
-
-### Puerto ya está en uso
-
-**Síntoma**: `Error: Port 8083 is already allocated`
-
-**Solución**:
-```bash
-# Encontrar qué proceso usa el puerto
-lsof -i :8080
-
-# Cambiar puerto en docker-compose.yml
-# ports:
-#   - "8081:8083"  # cambiar 8081 por otro puerto
-```
-
-### MongoDB no inicia
-
-**Síntoma**: MongoDB en estado `Exited`
-
-**Solución**:
-```bash
-# Eliminar volúmenes de MongoDB
-docker volume rm bootcamp-nttdata_ms-credits_mongodb_credits_data
-
-# Reiniciar
-docker-compose up -d mongodb
-```
-
-### Redis no responde
-
-**Síntoma**: Redis no se conecta
-
-**Solución**:
-```bash
-# Verificar salud de Redis
-docker exec redis-credits redis-cli -a eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81 ping
-
-# Debería responder: PONG
-```
-
-### Kafka no está saludable
-
-**Síntoma**: Kafka no aparece en logs o con estado `Exited`
-
-**Solución**:
-```bash
-# Ver logs detallados de Kafka
-docker-compose logs kafka
-
-# Verificar el volumen
-docker volume ls | grep kafka_data
-
-# Reiniciar Kafka
-docker-compose restart kafka
-```
-
-## 👨‍💻 Desarrollo Local (Sin Docker)
-
-Para desarrollar sin contenedores:
-
-### Requisitos Adicionales
-- MongoDB corriendo localmente en puerto 27017
-- Redis corriendo localmente en puerto 6379
-- Kafka corriendo localmente en puerto 9092
-
-### Iniciar la Aplicación
-
-```bash
-./mvnw spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=dev"
-```
-
-O si tienes Maven instalado globalmente:
-
-```bash
-mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=dev"
-```
-
-## 📊 Monitoreo
-
-### Prometheus Metrics
-
-```bash
-curl http://localhost:8080/actuator/prometheus | grep -i credit
-```
-
-### Health Detailed
-
-```bash
-curl http://localhost:8080/actuator/health
-```
-
-### Circuit Breaker Status
-
-```bash
-curl http://localhost:8080/actuator/circuitbreakers
-```
-
-## 🧹 Limpiar Recursos
-
-### Eliminar todo (containers, volúmenes, networks no usadas)
-
-```bash
-docker-compose down -v
-docker volume prune
-docker network prune
-```
-
-### Solo eliminar contenedores (mantener volúmenes)
-
-```bash
-docker-compose down
-```
-
-## 📝 Archivos Importantes
-
-- **Dockerfile**: Configuración para construir la imagen
-- **.dockerignore**: Archivos a excluir del build
-- **docker-compose.yml**: Orquestación de servicios
-- **application-prod.yaml**: Configuración para ambiente de producción
-- **DOCKER-GUIDE.md**: Guía detallada de Docker
-
-## 📖 Documentación Adicional
-
-Para más información sobre Docker, consulta [DOCKER-GUIDE.md](./DOCKER-GUIDE.md)
-
-## 🤝 Integración con Otros Microservicios
-
-Todos los microservicios deben estar en la red `bootcamp-network`:
-
-```bash
-# Desde otro contenedor, acceder a ms-credits
-curl http://ms-credits:8083/actuator/health
-```
-
-## 💡 Tips Útiles
-
-### Ejecutar comandos dentro de un contenedor
-
-```bash
-docker exec -it ms-credits sh
-```
-
-### Ver tamaño de volúmenes
-
-```bash
-docker volume ls -q | xargs -I {} sh -c 'echo {} && docker volume inspect {} | grep Mountpoint'
-```
-
-### Exportar logs a archivo
-
-```bash
-docker-compose logs > logs.txt
-```
-
-### Monitorear recursos en tiempo real
-
-```bash
-docker stats
-```
-
-## ✅ Checklist de Verificación
-
-- [ ] Red `bootcamp-network` creada
-- [ ] Imagen `ms-credits:latest` construida
-- [ ] Todos los servicios en estado `Up`
-- [ ] MongoDB responde en puerto 27017
-- [ ] Redis responde en puerto 6381
-- [ ] Kafka responde en puerto 9092
-- [ ] ms-credits responde en puerto 8083
-- [ ] Health check retorna status UP
-- [ ] Swagger accesible en http://localhost:8080/swagger-ui.html
-
-## 📞 Soporte
-
-Para reportar problemas, revisar:
-1. Los logs: `docker-compose logs`
-2. El estado de servicios: `docker-compose ps`
-3. La salud de cada servicio individuamente
-
----
-
-**Última actualización**: 2026-07-01
+- [Spring WebFlux](https://spring.io/projects/spring-webflux)
+- [Resilience4j](https://resilience4j.readme.io/)
+- [MongoDB Reactive](https://spring.io/projects/spring-data-mongodb)
