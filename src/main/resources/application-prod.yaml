@@ -2,10 +2,6 @@ spring:
   application:
     name: ms-credits
 
-  cloud:
-    config:
-      enabled: true
-
   # MongoDB Configuration (from Cloud Config Server)
   data:
     mongodb:
@@ -42,17 +38,6 @@ spring:
     serialization:
       write-dates-as-timestamps: false
     time-zone: UTC
-
-server:
-  port: 8083
-
-eureka:
-  client:
-    enabled: true
-  instance:
-    preferIpAddress: true
-    ipAddress: ms-credits
-    hostName: ms-credits
 
 # Actuator Configuration
 management:
@@ -172,13 +157,6 @@ resilience4j:
 
       externalApi:
         timeout-duration: 5s
-
-# Kafka Topics Configuration
-kafka:
-  topics:
-    credit-created: credit.created
-    credit-payment-completed: credit.payment.completed
-    credit-charge-completed: credit.charge.completed
 
 # Logging Configuration
 logging:

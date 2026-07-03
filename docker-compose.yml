@@ -53,7 +53,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: read424/ms-credits:latest
+    image: read424/ms-credits:v1.0.0
     container_name: ms-credits
     ports:
       - "8083:8083"
